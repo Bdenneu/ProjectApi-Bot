@@ -13,7 +13,8 @@ class Author(Base):
         id              = Column(Integer, primary_key=True)
         name            = Column(String, unique=True)
         projects        = relationship('Projects', secondary='assignement')
-
+        discord_ids     = relationship('DiscordId')
+        password        = Column(String, nullable=True)
 class Projects(Base):
         __tablename__   = 'projects'
         id              = Column(Integer, primary_key=True)
@@ -27,6 +28,12 @@ class Assignement(Base):
         author_id       = Column(Integer,ForeignKey('author.id', ondelete='CASCADE'))
         projects_id     = Column(Integer,ForeignKey('projects.id', ondelete='CASCADE'))
         
+class DiscordId(Base):
+        __tablename__   = 'discordid'
+        id              = Column(Integer,primary_key=True)
+        discord_id      = Column(Integer,unique=True)
+        author_id       = Column(Integer,ForeignKey('author.id', ondelete='CASCADE'))
+
 Base.metadata.create_all(engine)
 session = sessionmaker(bind=engine)()
 
@@ -40,6 +47,12 @@ def db_get_project(name):
     aTry = session.query(Projects).filter(Projects.name==name).first()
     if aTry:
         return (True, aTry)
+    return (False,None)
+
+def db_get_discordid(id):
+    aTry = session.query(DiscordId).filter(DiscordId.discord_id == id).first()
+    if aTry:
+        return (True,aTry)
     return (False,None)
 
 def db_list_author():
@@ -61,3 +74,12 @@ def db_list_assigned():
     if aTry:
         return (True,aTry)
     return (False,None)
+
+def db_whoami(id):
+    aTry = session.query(DiscordId).filter(DiscordId.discord_id==str(id)).first()
+    if aTry:
+        aTry = session.query(Author).filter(Author.id == aTry.author_id).first()
+        return (True,aTry)
+    return (False,None)
+
+
