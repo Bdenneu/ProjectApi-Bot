@@ -10,12 +10,16 @@ class ProjectBot(discord.Client):
         self.token = tokens
         self.bot = discord.Client()
         self.whitelist_channels = [("dev-bot","blabla")]
-        self.command_list = {"ping":"Answer pong!",
+        self.command_list = {
+                             "define_me":"Add/update yourself in the author database",
                              "help":"Show list of commands",
-                             "show_projects":"Show the list of project",
-                             "show_unassigned":"Show the unassigned projects",
-                             "whoami":"show what is your nickname in the database",
-                             "define_me":"Add/update yourself in the author database"}
+                             "ping":"Answer pong!",
+                             "show":"`{help show` for more informations",
+                             "whoami":"show what is your nickname in the database"}
+        self.command_list_show = {
+                             "show projects":"Show the list of project",
+                             "show unassigned":"Show the unassigned projects"
+                                    }
 
     def catch(self):
         @self.bot.event
@@ -34,37 +38,46 @@ class ProjectBot(discord.Client):
                             await message.channel.send("pong!")
                         #########################################
                         elif asked_command == "help":
-                            answer = "Here is the command list:\n"
-                            for i in self.command_list:
-                                answer += "**{}**: {}\n".format(i,self.command_list[i])
+                            if len(list_words) == 1:
+                                answer = "__Here is the command list__:\n"
+                                for i in self.command_list:
+                                    answer += "**{}**: {}\n".format(i,self.command_list[i])
+                            elif len(list_words) == 2 and list_words[1] == "show":
+                                answer = "__Here is the command list__:\n"
+                                for i in self.command_list_show:
+                                    answer += "**{}**: {}\n".format(i,self.command_list_show[i])
                             #if message.channel is undefined, use self.bot.send_message
                             await message.channel.send(answer)
                         #########################################
-                        elif asked_command == "show_projects":
-                            data = db_list_project()
-                            answer = ""
-                            for i in data:
-                                answer += "================\n"
-                                answer += "**Name (#{})**: {}".format(i.id,i.name)
-                                if len(i.authors) > 0:
-                                    answer += "\n**Author(s)**: _{}_".format(i.authors[0].name)
-                                    if len(i.authors[1:]) > 0:
-                                        for j in i.authors[1:]:
-                                            answer += ", _{}_".format(j.name)
-                                answer += "\n**Description**: {}\n".format(i.description)
-                            await message.channel.send(answer)
+                        elif asked_command == "show" and len(list_words) == 2:
+                            if list_words[1] == "projects":
+                                data = db_list_project()
+                                if data[0]:
+                                    answer = ""
+                                    for i in data:
+                                        answer += "================\n"
+                                        answer += "__**Name (#{})**__: {}".format(i.id,i.name)
+                                        if len(i.authors) > 0:
+                                            answer += "\n__**Author(s)**__: _{}_".format(i.authors[0].name)
+                                            if len(i.authors[1:]) > 0:
+                                                for j in i.authors[1:]:
+                                                    answer += ", _{}_".format(j.name)
+                                        answer += "\n**__Description__**: {}\n".format(i.description)
+                                    await message.channel.send(answer)
+                                else:
+                                    await message.channel.send("There are no projects")
                         ########################################
-                        elif asked_command == "show_unassigned":
-                            data = db_list_unassigned()
-                            if data[0]:
-                                answer = ""
-                                for i in data[1]:
-                                    answer += "================\n"
-                                    answer += "**Name (#{})**: {}\n".format(i.id,i.name)
-                                    answer += "**Description**: {}\n".format(i.description)
-                                await message.channel.send(answer)
-                            else:
-                                await message.channel.send("There are no unassigned projects")
+                            elif list_words[1] == "unassigned":
+                                data = db_list_unassigned()
+                                if data[0]:
+                                    answer = ""
+                                    for i in data[1]:
+                                        answer += "================\n"
+                                        answer += "__**Name (#{})**__: {}\n".format(i.id,i.name)
+                                        answer += "__**Description**__: {}\n".format(i.description)
+                                    await message.channel.send(answer)
+                                else:
+                                    await message.channel.send("There are no unassigned projects")
                         #######################################
                         elif asked_command == "whoami":
                             data = db_whoami(message.author.id)
