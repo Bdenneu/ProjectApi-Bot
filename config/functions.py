@@ -4,5 +4,4 @@ def func_check_password(password,name):
     return check_password_hash(aTry[1].password,password)
 
 def func_need_password(author):
-    print("#{}#".format(author.password))
     return author.password != ""
