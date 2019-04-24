@@ -5,3 +5,4 @@ def func_check_password(password,name):
 
 def func_need_password(author):
     return author.password != ""
+

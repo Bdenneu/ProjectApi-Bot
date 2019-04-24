@@ -34,7 +34,7 @@ class ProjectBot(discord.Client):
                             await message.channel.send("pong!")
                         #########################################
                         elif asked_command == "help":
-                            answer = "Listes des commandes:\n"
+                            answer = "Here is the command list:\n"
                             for i in self.command_list:
                                 answer += "**{}**: {}\n".format(i,self.command_list[i])
                             #if message.channel is undefined, use self.bot.send_message
@@ -98,6 +98,9 @@ class ProjectBot(discord.Client):
                                     if New_author[0]:
                                         New_author[1].discord_ids += [new_discord_id]
                                         New_author = New_author[1]
+                                    elif Current_author[0]:
+                                        Current_author[1].name = list_words[1]
+                                        New_author = Current_author[1]
                                     else:
                                         New_author = Author(name=list_words[1],discord_ids = [new_discord_id], password = "")
                                         New_author.discord_ids += [new_discord_id]

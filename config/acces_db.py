@@ -82,4 +82,12 @@ def db_whoami(id):
         return (True,aTry)
     return (False,None)
 
+def db_clean():
+    #cleaning author
+    data = db_list_author()
+    for i in data:
+        if len(i.discord_ids) == 0:
+            session.delete(i)
 
+    session.commit()
+    
