@@ -78,6 +78,8 @@ class ProjectBot(discord.Client):
                                     await message.channel.send(answer)
                                 else:
                                     await message.channel.send("There are no unassigned projects")
+                            else:
+                                await message.channel.send("Command not found: **{}**".format(asked_command)+". Try {help show")
                         #######################################
                         elif asked_command == "whoami":
                             data = db_whoami(message.author.id)
