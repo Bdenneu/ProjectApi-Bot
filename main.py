@@ -49,37 +49,40 @@ class ProjectBot(discord.Client):
                             #if message.channel is undefined, use self.bot.send_message
                             await message.channel.send(answer)
                         #########################################
-                        elif asked_command == "show" and len(list_words) == 2:
-                            if list_words[1] == "projects":
-                                data = db_list_project()
-                                if data[0]:
-                                    answer = ""
-                                    for i in data:
-                                        answer += "================\n"
-                                        answer += "__**Name (#{})**__: {}".format(i.id,i.name)
-                                        if len(i.authors) > 0:
-                                            answer += "\n__**Author(s)**__: _{}_".format(i.authors[0].name)
-                                            if len(i.authors[1:]) > 0:
-                                                for j in i.authors[1:]:
-                                                    answer += ", _{}_".format(j.name)
-                                        answer += "\n**__Description__**: {}\n".format(i.description)
-                                    await message.channel.send(answer)
-                                else:
-                                    await message.channel.send("There are no projects")
+                        elif asked_command == "show":
+                            if len(list_words) == 2:
+                                if list_words[1] == "projects":
+                                    data = db_list_project()
+                                    if data[0]:
+                                        answer = ""
+                                        for i in data:
+                                            answer += "================\n"
+                                            answer += "__**Name (#{})**__: {}".format(i.id,i.name)
+                                            if len(i.authors) > 0:
+                                                answer += "\n__**Author(s)**__: _{}_".format(i.authors[0].name)
+                                                if len(i.authors[1:]) > 0:
+                                                    for j in i.authors[1:]:
+                                                        answer += ", _{}_".format(j.name)
+                                            answer += "\n**__Description__**: {}\n".format(i.description)
+                                        await message.channel.send(answer)
+                                    else:
+                                        await message.channel.send("There are no projects")
                         ########################################
-                            elif list_words[1] == "unassigned":
-                                data = db_list_unassigned()
-                                if data[0]:
-                                    answer = ""
-                                    for i in data[1]:
-                                        answer += "================\n"
-                                        answer += "__**Name (#{})**__: {}\n".format(i.id,i.name)
-                                        answer += "__**Description**__: {}\n".format(i.description)
-                                    await message.channel.send(answer)
+                                elif list_words[1] == "unassigned":
+                                    data = db_list_unassigned()
+                                    if data[0]:
+                                        answer = ""
+                                        for i in data[1]:
+                                            answer += "================\n"
+                                            answer += "__**Name (#{})**__: {}\n".format(i.id,i.name)
+                                            answer += "__**Description**__: {}\n".format(i.description)
+                                        await message.channel.send(answer)
+                                    else:
+                                        await message.channel.send("There are no unassigned projects")
                                 else:
-                                    await message.channel.send("There are no unassigned projects")
+                                    await message.channel.send("Command not found: **{}**".format(asked_command)+". Try {help show")
                             else:
-                                await message.channel.send("Command not found: **{}**".format(asked_command)+". Try {help show")
+                                await message.channel.send("Command not found: **{}**".format(" ".join(list_words))+". Try {help show")
                         #######################################
                         elif asked_command == "whoami":
                             data = db_whoami(message.author.id)
